@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard – FitBuddy All Users</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <a href="/" class="brand">
+      🏋️ <span>FitBuddy</span> AI Admin
+    </a>
+    <div class="nav-links">
+      <a href="/">+ New Workout Plan</a>
+      <a href="/docs" target="_blank">API Docs</a>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="card card-full">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <h1 class="card-title" style="text-align: left; margin-bottom: 0.25rem;">
+            📊 Registered Users & Workout Plans
+          </h1>
+          <p style="color: #64748b; font-size: 0.92rem;">
+            Admin overview of all client fitness profiles, generated 7-day plans, and feedback revisions.
+          </p>
+        </div>
+        <a href="/" class="btn btn-primary" style="width: auto; padding: 0.6rem 1.25rem;">
+          + Create New Plan
+        </a>
+      </div>
+
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>User ID</th>
+              <th>Name</th>
+              <th>Age</th>
+              <th>Weight (kg)</th>
+              <th>Goal</th>
+              <th>Intensity</th>
+              <th style="min-width: 320px;">Original Plan</th>
+              <th style="min-width: 320px;">Updated Plan</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if users and users|length > 0 %}
+              {% for user in users %}
+              <tr>
+                <td><strong>#{{ user.id }}</strong></td>
+                <td>{{ user.name }}</td>
+                <td>{{ user.age }}</td>
+                <td>{{ user.weight }}</td>
+                <td><span style="color: #2563eb; font-weight: 600;">{{ user.goal }}</span></td>
+                <td>
+                  <span style="padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem; font-weight: 700;
+                    {% if user.intensity|lower == 'high' %}background: #fee2e2; color: #b91c1c;
+                    {% elif user.intensity|lower == 'medium' %}background: #fef3c7; color: #b45309;
+                    {% else %}background: #dcfce7; color: #15803d;{% endif %}">
+                    {{ user.intensity }}
+                  </span>
+                </td>
+                <td>
+                  <pre class="table-pre">{{ user.original_plan }}</pre>
+                </td>
+                <td>
+                  <pre class="table-pre" {% if user.updated_plan != 'Not updated' and user.updated_plan != 'N/A' %}style="border-color: #10b981; background: #f0fdf4;"{% endif %}>{{ user.updated_plan }}</pre>
+                </td>
+                <td>
+                  <form action="/delete-user/{{ user.id }}" method="POST" onsubmit="return confirm('Are you sure you want to delete user #{{ user.id }}?');">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                  </form>
+                </td>
+              </tr>
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td colspan="9" style="text-align: center; padding: 3rem; color: #64748b;">
+                  No users or workout plans registered yet.
+                  <div style="margin-top: 0.75rem;">
+                    <a href="/" class="btn btn-primary" style="width: auto; display: inline-block;">Generate First Plan</a>
+                  </div>
+                </td>
+              </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+
+      <div style="margin-top: 1.5rem;">
+        <a href="/" class="btn btn-outline">← Back to Generator Homepage</a>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    FitBuddy AI • Powered by FastAPI, SQLAlchemy & Google Gemini Models
+  </footer>
+</body>
+</html>
